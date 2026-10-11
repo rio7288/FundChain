@@ -1,0 +1,22 @@
+{
+  "name": "fundchain-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:api": "node --watch server.js",
+    "start:api": "node server.js",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia"
+  },
+  "dependencies": {
+    "ethers": "^6.13.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.26.3"
+  }
+}
