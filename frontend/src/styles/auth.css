@@ -399,3 +399,152 @@
 .auth-label-row a:hover {
     text-decoration: underline;
 }
+
+/* =========================================
+   FUNDCHAIN AUTH — DARK MODE
+========================================= */
+
+:root[data-theme="dark"] .auth-page {
+    --auth-white: #252c25;
+    --auth-warm: #171a17;
+    --auth-ivory: #202520;
+    --auth-beige: #394138;
+    --auth-sand: #586352;
+    --auth-charcoal: #eeeee6;
+    --auth-grey: #aaa99f;
+    --auth-olive: #a0ae8e;
+
+    background: #171a17;
+    color: #eeeee6;
+}
+
+/* Left editorial panel */
+:root[data-theme="dark"] .auth-story {
+    background: #252c25;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .auth-brand,
+:root[data-theme="dark"] .auth-story-content h1 {
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .auth-brand-mark {
+    border-color: #a0ae8e;
+    color: #a0ae8e;
+}
+
+:root[data-theme="dark"] .auth-eyebrow {
+    color: #a0ae8e;
+}
+
+:root[data-theme="dark"] .auth-story-description,
+:root[data-theme="dark"] .auth-story-bottom {
+    color: #b2b8aa;
+}
+
+:root[data-theme="dark"] .auth-decoration {
+    border-color: rgba(160, 174, 142, .18);
+}
+
+/* Right registration panel */
+:root[data-theme="dark"] .auth-form-section {
+    background: #171a17;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .auth-form-heading h2 {
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .auth-form-heading > p:last-child {
+    color: #aaa99f;
+}
+
+/* Form labels and inputs */
+:root[data-theme="dark"] .auth-field label {
+    color: #e5e8df;
+}
+
+:root[data-theme="dark"] .auth-field input {
+    background: #252c25;
+    color: #eeeee6;
+    border-color: #424b40;
+}
+
+:root[data-theme="dark"] .auth-field input::placeholder {
+    color: #92998c;
+}
+
+:root[data-theme="dark"] .auth-field input:focus {
+    border-color: #a0ae8e;
+    box-shadow: 0 0 0 3px rgba(160, 174, 142, .13);
+}
+
+:root[data-theme="dark"] .auth-password-toggle {
+    color: #aeb5a5;
+}
+
+:root[data-theme="dark"] .auth-password-toggle:hover {
+    color: #ffffff;
+}
+
+/* Terms and checkbox */
+:root[data-theme="dark"] .auth-terms {
+    color: #aaa99f;
+}
+
+:root[data-theme="dark"] .auth-terms input {
+    accent-color: #a0ae8e;
+}
+
+/* Create account button */
+:root[data-theme="dark"] .auth-submit {
+    background: #a0ae8e;
+    color: #171a17;
+    border-color: #a0ae8e;
+}
+
+:root[data-theme="dark"] .auth-submit:hover:not(:disabled) {
+    background: #b5c1a5;
+    border-color: #b5c1a5;
+    color: #171a17;
+}
+
+/* Messages */
+:root[data-theme="dark"] .auth-message-success {
+    background: #263729;
+    color: #c4e2bd;
+}
+
+:root[data-theme="dark"] .auth-message-error {
+    background: #3a2927;
+    color: #f0b9ae;
+}
+
+/* Sign-in link and footer */
+:root[data-theme="dark"] .auth-switch {
+    color: #aaa99f;
+}
+
+:root[data-theme="dark"] .auth-switch a,
+:root[data-theme="dark"] .auth-label-row a {
+    color: #a0ae8e;
+}
+
+:root[data-theme="dark"] .auth-form-footer {
+    border-color: #394138;
+    color: #92998c;
+}
+
+/* Smooth transition */
+.auth-page,
+.auth-story,
+.auth-form-section,
+.auth-field input,
+.auth-submit {
+    transition:
+        background-color .25s ease,
+        color .25s ease,
+        border-color .25s ease;
+}

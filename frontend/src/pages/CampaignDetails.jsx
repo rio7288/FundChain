@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
     ArrowLeft, ArrowUpRight, CalendarDays, CheckCircle2, Clock3,
     ExternalLink, FileText, Heart, LoaderCircle, LockKeyhole,
-    RefreshCw, Target, UploadCloud, Wallet
+    RefreshCw, Target, UploadCloud, Wallet, UserRound, AtSign
 } from "lucide-react";
 import { formatEther } from "ethers";
 import { supabase } from "../services/supabase";
@@ -77,6 +77,7 @@ export default function CampaignDetails() {
     const navigate = useNavigate();
 
     const [campaign, setCampaign] = useState(null);
+    const [creatorProfile, setCreatorProfile] = useState(null);
     const [milestones, setMilestones] = useState([]);
     const [chainMilestones, setChainMilestones] = useState([]);
     const [donations, setDonations] = useState([]);
@@ -162,8 +163,21 @@ export default function CampaignDetails() {
 
             if (milestoneError) throw milestoneError;
 
+            // Load the public creator profile using the campaign's creator_id.
+            // Email addresses are intentionally not selected or displayed.
+            const { data: profileRow, error: profileError } = await supabase
+                .from("profiles")
+                .select("full_name, username, role")
+                .eq("id", campaignRow.creator_id)
+                .maybeSingle();
+
+            if (profileError) {
+                console.warn("Creator profile could not be loaded:", profileError.message);
+            }
+
             setUser(authData?.user || null);
             setCampaign(campaignRow);
+            setCreatorProfile(profileRow || null);
             setMilestones(milestoneRows || []);
 
             await Promise.all([
@@ -751,6 +765,55 @@ export default function CampaignDetails() {
                             <h2>About this project</h2>
                             <p className="cd-about">{campaign.description || "No additional project information is available."}</p>
                         </div>
+
+                        <section className="cd-section cd-creator-section" aria-labelledby="cd-creator-heading">
+                            <p className="cd-section-eyebrow">THE PERSON BEHIND THE IDEA</p>
+                            <h2 id="cd-creator-heading">About the creator</h2>
+
+                            <div className="cd-creator-card">
+                                <div className="cd-creator-avatar" aria-hidden="true">
+                                    <UserRound size={27} />
+                                </div>
+
+                                <div className="cd-creator-details">
+                                    <div className="cd-creator-name-row">
+                                        <h3>
+                                            {creatorProfile?.full_name ||
+                                                creatorProfile?.username ||
+                                                "FundChain member"}
+                                        </h3>
+                                        <span className="cd-creator-badge">
+                                            <CheckCircle2 size={13} />
+                                            Campaign creator
+                                        </span>
+                                    </div>
+
+                                    {creatorProfile?.username && (
+                                        <p className="cd-creator-username">
+                                            <AtSign size={14} />
+                                            {creatorProfile.username}
+                                        </p>
+                                    )}
+
+                                    <div className="cd-creator-meta">
+                                        <span>
+                                            <UserRound size={14} />
+                                            {creatorProfile?.role || "Member"}
+                                        </span>
+                                        {campaign.creator_wallet && (
+                                            <span title={campaign.creator_wallet}>
+                                                <Wallet size={14} />
+                                                {shortAddress(campaign.creator_wallet)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="cd-creator-note">
+                                This profile is associated with the account that created this campaign.
+                            </p>
+                        </section>
 
                         <div className="cd-section cd-milestones-section">
                             <div className="cd-section-heading">

@@ -21,6 +21,10 @@ function getUserClient(accessToken) {
     );
 }
 
+// =========================================
+// CREATE CAMPAIGN
+// =========================================
+
 export async function createCampaign(data, user, accessToken) {
     const supabase = getUserClient(accessToken);
 
@@ -44,7 +48,8 @@ export async function createCampaign(data, user, accessToken) {
             image_url: data.imageUrl || null,
             target_amount_wei: targetWei,
             deadline: data.deadline,
-            status: "draft"
+            status: "draft",
+            is_deleted: false
         })
         .select()
         .single();
@@ -54,7 +59,7 @@ export async function createCampaign(data, user, accessToken) {
     const { error: milestoneError } = await supabase
         .from("milestones")
         .insert(
-            milestoneRows.map(milestone => ({
+            milestoneRows.map((milestone) => ({
                 ...milestone,
                 campaign_id: campaign.id
             }))
@@ -67,7 +72,10 @@ export async function createCampaign(data, user, accessToken) {
             .eq("id", campaign.id);
 
         if (cleanupError) {
-            console.error("Campaign cleanup failed:", cleanupError.message);
+            console.error(
+                "Campaign cleanup failed:",
+                cleanupError.message
+            );
         }
 
         throw milestoneError;
@@ -75,6 +83,10 @@ export async function createCampaign(data, user, accessToken) {
 
     return campaign;
 }
+
+// =========================================
+// GET MY CAMPAIGNS
+// =========================================
 
 export async function getMyCampaigns(user, accessToken) {
     const supabase = getUserClient(accessToken);
@@ -93,12 +105,17 @@ export async function getMyCampaigns(user, accessToken) {
             )
         `)
         .eq("creator_id", user.id)
+        .eq("is_deleted", false)
         .order("created_at", { ascending: false });
 
     if (error) throw error;
 
     return data;
 }
+
+// =========================================
+// GET PUBLIC CAMPAIGNS
+// =========================================
 
 export async function getPublicCampaigns() {
     const supabase = createClient(
@@ -119,6 +136,7 @@ export async function getPublicCampaigns() {
             created_at
         `)
         .eq("status", "active")
+        .eq("is_deleted", false)
         .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -126,7 +144,10 @@ export async function getPublicCampaigns() {
     return data;
 }
 
-// Update an existing draft.
+// =========================================
+// UPDATE CAMPAIGN DRAFT
+// =========================================
+
 export async function updateCampaignDraft(id, data, accessToken) {
     const supabase = getUserClient(accessToken);
 
@@ -156,12 +177,15 @@ export async function updateCampaignDraft(id, data, accessToken) {
     return campaign;
 }
 
-// Delete an existing draft.
+// =========================================
+// SOFT DELETE CAMPAIGN
+// =========================================
+
 export async function deleteCampaignDraft(id, accessToken) {
     const supabase = getUserClient(accessToken);
 
     const { data, error } = await supabase.rpc(
-        "delete_campaign_draft",
+        "soft_delete_campaign",
         {
             p_campaign_id: id
         }

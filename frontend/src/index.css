@@ -321,3 +321,337 @@ body {
     border-color: #b5c1a5 !important;
     color: #171a17 !important;
 }
+
+/* =========================================
+   FUNDCHAIN LANDING PAGE — DARK MODE
+========================================= */
+
+:root[data-theme="dark"] .fundchain-site {
+    --fc-white: #202520;
+    --fc-warm: #171a17;
+    --fc-ivory: #252c25;
+    --fc-beige: #30382f;
+    --fc-sand: #586352;
+    --fc-charcoal: #eeeee6;
+    --fc-grey: #aaa99f;
+    --fc-olive: #a0ae8e;
+    --fc-border: #394138;
+
+    background: var(--fc-page-bg);
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .fundchain-site .featured-section,
+:root[data-theme="dark"] .fundchain-site .about-section,
+:root[data-theme="dark"] .fundchain-site .site-footer {
+    background: var(--fc-surface);
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .fundchain-site .how-section,
+:root[data-theme="dark"] .fundchain-site .faq-section {
+    background: var(--fc-page-bg);
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .fundchain-site .project-card,
+:root[data-theme="dark"] .fundchain-site .campaign-empty,
+:root[data-theme="dark"] .fundchain-site .faq-help,
+:root[data-theme="dark"] .fundchain-site .implementation-note {
+    background: var(--fc-surface-soft);
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .fundchain-site .button-dark,
+:root[data-theme="dark"] .fundchain-site .site-header .button-dark {
+    background: #a0ae8e;
+    border-color: #a0ae8e;
+    color: #171a17;
+}
+
+:root[data-theme="dark"] .fundchain-site .button-dark:hover {
+    background: #b5c1a5;
+    border-color: #b5c1a5;
+    color: #171a17;
+}
+
+:root[data-theme="dark"] .fundchain-site .button-outline {
+    background: transparent;
+    border-color: #586352;
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .fundchain-site .button-outline:hover {
+    background: var(--fc-surface-soft);
+    border-color: var(--fc-accent);
+}
+
+:root[data-theme="dark"] .fundchain-site .button-light {
+    background: #a0ae8e;
+    color: #171a17;
+}
+
+:root[data-theme="dark"] .fundchain-site .faq-question,
+:root[data-theme="dark"] .fundchain-site .project-meta {
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .fundchain-site .hero-glass-note {
+    background: rgba(32, 37, 32, .88);
+    border-color: #586352;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .fundchain-site .hero-glass-note small {
+    color: #aaa99f;
+}
+
+:root[data-theme="dark"] .fundchain-site .site-header {
+    background: rgba(23, 26, 23, .94);
+    border-bottom-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .fundchain-site .dropdown-panel {
+    background: var(--fc-surface);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .fundchain-site .main-nav {
+    background: var(--fc-surface);
+}
+
+.fundchain-site,
+.fundchain-site section,
+.fundchain-site .site-header,
+.fundchain-site .site-footer,
+.fundchain-site .button {
+    transition:
+        background-color .25s ease,
+        color .25s ease,
+        border-color .25s ease;
+}
+
+/* FUNDCHAIN LANDING PAGE — BUTTON DARK MODE FIX */
+
+:root[data-theme="dark"] .fundchain-site a.button.button-outline {
+    background: #252c25 !important;
+    color: #eeeee6 !important;
+    border: 1px solid #586352 !important;
+}
+
+:root[data-theme="dark"] .fundchain-site a.button.button-outline:hover {
+    background: #30382f !important;
+    color: #ffffff !important;
+    border-color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .fundchain-site a.button.button-light {
+    background: #a0ae8e !important;
+    color: #171a17 !important;
+    border: 1px solid #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .fundchain-site a.button.button-light:hover {
+    background: #b5c1a5 !important;
+    color: #171a17 !important;
+    border-color: #b5c1a5 !important;
+}
+
+:root[data-theme="dark"] .fundchain-site a.button.button-dark {
+    background: #a0ae8e !important;
+    color: #171a17 !important;
+    border-color: #a0ae8e !important;
+}
+
+/* =========================================
+   FUNDCHAIN — COMPLETE LANDING PAGE DARK MODE
+========================================= */
+
+:root[data-theme="dark"] .fundchain-site {
+    background: #171a17 !important;
+    color: #eeeee6;
+}
+
+/* Main sections */
+:root[data-theme="dark"] .fundchain-site .featured-section,
+:root[data-theme="dark"] .fundchain-site .about-section,
+:root[data-theme="dark"] .fundchain-site .site-footer {
+    background: #202520 !important;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .fundchain-site .how-section,
+:root[data-theme="dark"] .fundchain-site .faq-section {
+    background: #171a17 !important;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .fundchain-site .closing-section {
+    background: #252c25 !important;
+    color: #eeeee6;
+}
+
+/* Text */
+:root[data-theme="dark"] .fundchain-site h1,
+:root[data-theme="dark"] .fundchain-site h2,
+:root[data-theme="dark"] .fundchain-site h3,
+:root[data-theme="dark"] .fundchain-site .faq-question {
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .fundchain-site .hero-description,
+:root[data-theme="dark"] .fundchain-site .section-intro,
+:root[data-theme="dark"] .fundchain-site .hero-footnote,
+:root[data-theme="dark"] .fundchain-site .step-item p,
+:root[data-theme="dark"] .fundchain-site .about-copy > p,
+:root[data-theme="dark"] .fundchain-site .faq-answer p {
+    color: #aaa99f;
+}
+
+/* Campaign cards and empty state */
+:root[data-theme="dark"] .fundchain-site .project-card,
+:root[data-theme="dark"] .fundchain-site .campaign-empty,
+:root[data-theme="dark"] .fundchain-site .faq-help,
+:root[data-theme="dark"] .fundchain-site .implementation-note {
+    background: #252c25 !important;
+    color: #eeeee6;
+    border-color: #394138;
+}
+
+:root[data-theme="dark"] .fundchain-site .project-meta {
+    color: #eeeee6;
+    border-color: #394138;
+}
+
+:root[data-theme="dark"] .fundchain-site .step-item {
+    border-color: #586352;
+}
+
+:root[data-theme="dark"] .fundchain-site .step-icon,
+:root[data-theme="dark"] .fundchain-site .principle-list > div {
+    border-color: #394138;
+}
+
+:root[data-theme="dark"] .fundchain-site .principle-list > div > span {
+    background: #30382f;
+}
+
+/* Navigation */
+:root[data-theme="dark"] .fundchain-site .site-header {
+    background: rgba(23, 26, 23, .96) !important;
+    border-color: #394138;
+}
+
+:root[data-theme="dark"] .fundchain-site .nav-link,
+:root[data-theme="dark"] .fundchain-site .nav-login {
+    color: #d1d3c9;
+}
+
+:root[data-theme="dark"] .fundchain-site .dropdown-panel {
+    background: #202520 !important;
+    border-color: #394138;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .fundchain-site .dropdown-panel a:hover {
+    background: #30382f;
+}
+
+@media (max-width: 680px) {
+    :root[data-theme="dark"] .fundchain-site .main-nav {
+        background: #202520 !important;
+        border-color: #394138;
+    }
+
+    :root[data-theme="dark"] .fundchain-site .dropdown-panel {
+        background: #252c25 !important;
+    }
+}
+
+/* Buttons */
+:root[data-theme="dark"] .fundchain-site a.button.button-dark,
+:root[data-theme="dark"] .fundchain-site a.button.button-light {
+    background: #a0ae8e !important;
+    color: #171a17 !important;
+    border-color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .fundchain-site a.button.button-outline {
+    background: #252c25 !important;
+    color: #eeeee6 !important;
+    border-color: #586352 !important;
+}
+
+:root[data-theme="dark"] .fundchain-site a.button:hover {
+    filter: brightness(1.12);
+}
+
+/* Smooth theme switching */
+.fundchain-site,
+.fundchain-site section,
+.fundchain-site .site-header,
+.fundchain-site .site-footer,
+.fundchain-site .button {
+    transition:
+        background-color .25s ease,
+        color .25s ease,
+        border-color .25s ease;
+}
+
+/* Dashboard loading screen — dark mode */
+:root[data-theme="dark"] .fc-loading {
+    background: #171a17 !important;
+    color: #aaa99f !important;
+    transition: background .25s ease, color .25s ease;
+}
+
+:root[data-theme="dark"] .fc-loading-mark {
+    color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .fc-loading p {
+    color: #c4c8bb !important;
+}
+
+/* Consistent sage-green primary buttons in dark mode */
+
+:root[data-theme="dark"] .campaign-page .campaign-primary-button,
+:root[data-theme="dark"] .campaign-page .button-light,
+:root[data-theme="dark"] .campaign-page .button-dark,
+:root[data-theme="dark"] .fundchain-site .button.button-outline {
+    background: #a0ae8e !important;
+    color: #171a17 !important;
+    border: 1px solid #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .campaign-page .campaign-primary-button:hover,
+:root[data-theme="dark"] .campaign-page .button-light:hover,
+:root[data-theme="dark"] .campaign-page .button-dark:hover,
+:root[data-theme="dark"] .fundchain-site .button.button-outline:hover {
+    background: #b5c1a5 !important;
+    color: #171a17 !important;
+    border-color: #b5c1a5 !important;
+}
+
+/* Remove the separate background box behind desktop navigation */
+
+:root[data-theme="dark"] .site-header .main-nav {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Keep the navbar background consistent */
+:root[data-theme="dark"] .site-header {
+    background: #171a17 !important;
+    border-color: #394138 !important;
+}
+
+/* Preserve mobile navigation panel */
+@media (max-width: 768px) {
+    :root[data-theme="dark"] .site-header .main-nav.is-open {
+        background: #202520 !important;
+        border: 1px solid #394138 !important;
+    }
+}

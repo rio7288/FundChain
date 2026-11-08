@@ -511,3 +511,17 @@
         font-size: 43px;
     }
 }
+
+/* Fix white space below Create Campaign page in dark mode */
+
+:root[data-theme="dark"],
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] #root {
+    background-color: #171a17 !important;
+}
+
+:root[data-theme="dark"] .campaign-page {
+    background-color: #171a17 !important;
+    color: #eeeee6;
+    min-height: 100vh;
+}

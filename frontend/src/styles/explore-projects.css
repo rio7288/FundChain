@@ -402,3 +402,169 @@
         font-size: 12px;
     }
 }
+
+/* Explore page — dark mode controls */
+:root[data-theme="dark"] .explore-page {
+    background: #171a17;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .explore-page input,
+:root[data-theme="dark"] .explore-page select {
+    background: #252c25 !important;
+    color: #eeeee6 !important;
+    border-color: #586352 !important;
+}
+
+:root[data-theme="dark"] .explore-page input::placeholder {
+    color: #aaa99f !important;
+    opacity: 1;
+}
+
+:root[data-theme="dark"] .explore-page select option {
+    background: #202520;
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .explore-page .explore-container button:not(.fc-theme-toggle) {
+    background: #252c25;
+    color: #eeeee6;
+    border-color: #586352;
+}
+
+:root[data-theme="dark"] .explore-page .explore-container button:hover {
+    border-color: #a0ae8e;
+}
+
+:root[data-theme="dark"] .explore-page .explore-heading h1,
+:root[data-theme="dark"] .explore-page .explore-empty h2 {
+    color: #eeeee6;
+}
+
+:root[data-theme="dark"] .explore-page .explore-heading > div > p:last-child {
+    color: #aaa99f;
+}
+
+/* =========================================
+   FUNDCHAIN — EXPLORE PAGE DARK MODE
+========================================= */
+
+:root[data-theme="dark"] .explore-page {
+    background: #171a17;
+    color: #eeeee6;
+}
+
+/* Search bar */
+:root[data-theme="dark"] .explore-search {
+    background: #252c25;
+    border: 1px solid #424b40;
+    color: #dce2d5;
+}
+
+:root[data-theme="dark"] .explore-search:focus-within {
+    border-color: #a0ae8e;
+    box-shadow: 0 0 0 3px rgba(160, 174, 142, 0.12);
+}
+
+:root[data-theme="dark"] .explore-search input {
+    background: transparent !important;
+    color: #f1f2eb !important;
+    border: none !important;
+    outline: none;
+}
+
+:root[data-theme="dark"] .explore-search input::placeholder {
+    color: #a2a69b !important;
+    opacity: 1;
+}
+
+:root[data-theme="dark"] .explore-search > svg {
+    color: #aab29f;
+}
+
+:root[data-theme="dark"] .explore-search button {
+    background: transparent !important;
+    color: #c6cdbb !important;
+    border: none !important;
+}
+
+/* Sort / filter control */
+:root[data-theme="dark"] .explore-sort {
+    background: #252c25;
+    border: 1px solid #424b40;
+    color: #dce2d5;
+}
+
+:root[data-theme="dark"] .explore-sort select {
+    background: transparent !important;
+    color: #f1f2eb !important;
+    border: none !important;
+    outline: none;
+}
+
+:root[data-theme="dark"] .explore-sort select option {
+    background: #252c25;
+    color: #f1f2eb;
+}
+
+:root[data-theme="dark"] .explore-sort > svg {
+    color: #aab29f;
+}
+
+/* Refresh button */
+:root[data-theme="dark"] .explore-refresh {
+    background: #252c25 !important;
+    color: #f1f2eb !important;
+    border: 1px solid #424b40 !important;
+}
+
+:root[data-theme="dark"] .explore-refresh:hover:not(:disabled) {
+    background: #303a2e !important;
+    border-color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .explore-refresh:disabled {
+    opacity: 0.55;
+}
+
+/* Category filters */
+:root[data-theme="dark"] .explore-category {
+    background: transparent !important;
+    color: #d6d9cf !important;
+    border: 1px solid #62695c !important;
+}
+
+:root[data-theme="dark"] .explore-category:hover {
+    background: #252c25 !important;
+    border-color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .explore-category.active {
+    background: #303a2e !important;
+    color: #dce8ce !important;
+    border-color: #a0ae8e !important;
+}
+
+/* Results text */
+:root[data-theme="dark"] .explore-results-info {
+    color: #a5a99e;
+}
+
+:root[data-theme="dark"] .explore-results-info strong {
+    color: #e8ecdf;
+}
+
+/* Page heading and supporting text */
+:root[data-theme="dark"] .explore-heading h1,
+:root[data-theme="dark"] .explore-empty h2 {
+    color: #f1f2eb;
+}
+
+:root[data-theme="dark"] .explore-heading > div > p:last-child,
+:root[data-theme="dark"] .explore-empty p {
+    color: #a5a99e;
+}
+
+:root[data-theme="dark"] .explore-heading {
+    border-bottom-color: #343b32;
+}

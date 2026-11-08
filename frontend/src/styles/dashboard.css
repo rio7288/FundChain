@@ -488,3 +488,32 @@
         animation-duration: 0.01ms !important;
     }
 }
+
+/* Dashboard loading screen — dark theme */
+:root[data-theme="dark"] .fc-loading {
+    background: #171a17 !important;
+    color: #c5cbbd !important;
+    min-height: 100vh;
+}
+
+:root[data-theme="dark"] .fc-loading-mark {
+    color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .fc-loading p {
+    color: #b7bcae !important;
+}
+
+/* Dashboard — Create a Campaign button */
+:root[data-theme="dark"] .fc-dashboard .fc-primary-button {
+    background: #879779 !important;
+    color: #171a17 !important;
+    border: 1px solid #879779 !important;
+}
+
+:root[data-theme="dark"] .fc-dashboard .fc-primary-button:hover {
+    background: #78896b !important;
+    border-color: #78896b !important;
+    color: #171a17 !important;
+    transform: translateY(-2px);
+}
