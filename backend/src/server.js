@@ -16,13 +16,25 @@ const app = express();
 const PORT = Number(process.env.PORT) || 5000;
 
 // Only allow frontend origins that you actually use.
-const allowedOrigins = [
+const localOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
 ];
 
+const deployedOrigins = (
+    process.env.FRONTEND_URLS ||
+    process.env.FRONTEND_URL ||
+    ""
+)
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean);
+
+const allowedOrigins = [
+    ...new Set([...localOrigins, ...deployedOrigins]),
+];
 // Security headers.
 app.use(helmet());
 
