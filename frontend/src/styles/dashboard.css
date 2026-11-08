@@ -1,0 +1,490 @@
+
+.fc-dashboard {
+    --fc-white: #FFFFFF;
+    --fc-warm: #FAF9F6;
+    --fc-ivory: #F8F5EF;
+    --fc-beige: #E9E1D5;
+    --fc-sand: #D7C8B5;
+    --fc-charcoal: #292D27;
+    --fc-grey: #77766F;
+    --fc-olive: #68745C;
+
+    min-height: 100vh;
+    display: flex;
+    background: var(--fc-warm);
+    color: var(--fc-charcoal);
+    font-family: "DM Sans", sans-serif;
+}
+
+.fc-loading {
+    min-height: 100vh;
+    background: var(--fc-warm);
+    display: grid;
+    place-content: center;
+    text-align: center;
+    color: var(--fc-grey);
+}
+
+.fc-loading-mark {
+    font-family: "Playfair Display", serif;
+    font-size: 42px;
+    color: var(--fc-charcoal);
+}
+
+.fc-sidebar {
+    width: 255px;
+    flex-shrink: 0;
+    min-height: 100vh;
+    background: var(--fc-white);
+    border-right: 1px solid var(--fc-beige);
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.fc-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-family: "Playfair Display", serif;
+    font-size: 25px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 60px;
+}
+
+.fc-brand-symbol {
+    width: 37px;
+    height: 37px;
+    border: 1px solid var(--fc-charcoal);
+    display: grid;
+    place-items: center;
+    font-family: "Playfair Display", serif;
+    font-size: 22px;
+}
+
+.fc-side-label,
+.fc-eyebrow {
+    color: var(--fc-olive);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.fc-side-label {
+    margin: 0 0 15px 12px;
+}
+
+.fc-side-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 12px;
+    margin-bottom: 5px;
+    border: 0;
+    background: transparent;
+    border-radius: 5px;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--fc-grey);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.fc-side-link:hover,
+.fc-side-active {
+    background: var(--fc-ivory);
+    color: var(--fc-charcoal);
+}
+
+.fc-sidebar-bottom {
+    margin-top: auto;
+}
+
+.fc-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.fc-topbar {
+    height: 75px;
+    padding: 0 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.85);
+    border-bottom: 1px solid var(--fc-beige);
+}
+
+.fc-breadcrumb {
+    font-size: 12px;
+    color: var(--fc-grey);
+}
+
+.fc-breadcrumb span {
+    padding: 0 9px;
+    color: var(--fc-sand);
+}
+
+.fc-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 13px;
+}
+
+.fc-user-initial {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--fc-beige);
+    display: grid;
+    place-items: center;
+    font-family: "Playfair Display", serif;
+    font-size: 17px;
+}
+
+.fc-content {
+    max-width: 1250px;
+    margin: auto;
+    padding: 55px 5% 25px;
+}
+
+.fc-welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-bottom: 65px;
+}
+
+.fc-welcome h1 {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(34px, 4vw, 53px);
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 15px 0;
+    letter-spacing: -1.5px;
+}
+
+.fc-welcome h1 em {
+    color: var(--fc-olive);
+    font-weight: 500;
+}
+
+.fc-welcome-text {
+    color: var(--fc-grey);
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 550px;
+}
+
+.fc-primary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--fc-charcoal);
+    color: white;
+    border: 1px solid var(--fc-charcoal);
+    padding: 15px 22px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.fc-primary-button:hover {
+    background: var(--fc-olive);
+    border-color: var(--fc-olive);
+    transform: translateY(-2px);
+}
+
+.fc-section {
+    margin-bottom: 65px;
+}
+
+.fc-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 15px;
+}
+
+.fc-section-heading h2 {
+    font-family: "Playfair Display", serif;
+    font-weight: 500;
+    font-size: 29px;
+    margin: 9px 0 0;
+}
+
+.fc-section-note {
+    color: var(--fc-grey);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.fc-action-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--fc-beige);
+    border-bottom: 1px solid var(--fc-beige);
+}
+
+.fc-action-card {
+    min-width: 0;
+    min-height: 250px;
+    padding: 25px 20px;
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--fc-beige);
+    text-align: left;
+    color: var(--fc-charcoal);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.fc-action-card:last-child {
+    border-right: 0;
+}
+
+.fc-action-card:hover {
+    background: var(--fc-white);
+}
+
+.fc-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fc-card-number {
+    color: var(--fc-grey);
+    font-size: 11px;
+}
+
+.fc-card-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--fc-beige);
+    border-radius: 50%;
+    color: var(--fc-olive);
+}
+
+.fc-action-card h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 21px;
+    font-weight: 500;
+    margin: 22px 0 9px;
+}
+
+.fc-action-card p {
+    color: var(--fc-grey);
+    font-size: 12px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.fc-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--fc-olive);
+    margin-top: 25px;
+}
+
+.fc-account-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.fc-account-card {
+    min-width: 0;
+    padding: 28px;
+    background: var(--fc-white);
+    border: 1px solid var(--fc-beige);
+    border-radius: 3px;
+    scroll-margin-top: 30px;
+}
+
+.fc-account-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 25px;
+}
+
+.fc-account-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    background: var(--fc-ivory);
+    color: var(--fc-olive);
+}
+
+.fc-account-heading h3 {
+    font-family: "Playfair Display", serif;
+    font-size: 19px;
+    font-weight: 500;
+    margin: 0 0 5px;
+}
+
+.fc-account-heading p {
+    color: var(--fc-grey);
+    font-size: 11px;
+    margin: 0;
+}
+
+.fc-detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--fc-ivory);
+    font-size: 12px;
+}
+
+.fc-detail-row span {
+    color: var(--fc-grey);
+}
+
+.fc-detail-row strong {
+    text-align: right;
+    overflow-wrap: anywhere;
+    font-weight: 500;
+}
+
+.fc-dashboard-footer {
+    border-top: 1px solid var(--fc-beige);
+    padding: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    color: var(--fc-grey);
+    font-size: 11px;
+}
+
+.fc-mobile-toggle {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: var(--fc-charcoal);
+    cursor: pointer;
+}
+
+@media (max-width: 1050px) {
+    .fc-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fc-action-card:nth-child(2) {
+        border-right: 0;
+    }
+
+    .fc-action-card:nth-child(-n+2) {
+        border-bottom: 1px solid var(--fc-beige);
+    }
+}
+
+@media (max-width: 760px) {
+    .fc-sidebar {
+        position: fixed;
+        z-index: 20;
+        left: -270px;
+        top: 0;
+        transition: left 0.25s ease;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.08);
+    }
+
+    .fc-sidebar-open {
+        left: 0;
+    }
+
+    .fc-mobile-toggle {
+        display: block;
+    }
+
+    .fc-topbar {
+        justify-content: flex-start;
+        gap: 15px;
+        padding: 0 20px;
+    }
+
+    .fc-topbar-right {
+        margin-left: auto;
+    }
+
+    .fc-topbar-name {
+        display: none;
+    }
+
+    .fc-content {
+        padding: 40px 20px 20px;
+    }
+
+    .fc-welcome {
+        margin-bottom: 45px;
+    }
+
+    .fc-account-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fc-section-note {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .fc-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fc-action-card {
+        min-height: 205px;
+        border-right: 0;
+        border-bottom: 1px solid var(--fc-beige);
+    }
+
+    .fc-action-card:last-child {
+        border-bottom: 0;
+    }
+
+    .fc-welcome h1 {
+        font-size: 35px;
+    }
+
+    .fc-primary-button {
+        width: 100%;
+    }
+
+    .fc-dashboard-footer {
+        flex-direction: column;
+    }
+
+    .fc-account-card {
+        padding: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fc-dashboard *,
+    .fc-dashboard *::before,
+    .fc-dashboard *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

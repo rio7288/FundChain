@@ -1,0 +1,323 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap');
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #292d27;
+  background: #faf9f6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  --fc-white: #fff;
+  --fc-warm: #faf9f6;
+  --fc-ivory: #f8f5ef;
+  --fc-beige: #e9e1d5;
+  --fc-sand: #d7c8b5;
+  --fc-brown: #a8957c;
+  --fc-charcoal: #292d27;
+  --fc-grey: #77766f;
+  --fc-olive: #68745c;
+  --fc-border: rgba(41, 45, 39, .13);
+  --fc-serif: 'Playfair Display', Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input, textarea, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+#root { width: 100%; min-height: 100vh; margin: 0; }
+::selection { background: #d7c8b5; color: #292d27; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* =========================================
+   FUNDCHAIN GLOBAL DARK THEME
+========================================= */
+
+:root {
+    color-scheme: light;
+    --fc-page-bg: #faf9f6;
+    --fc-surface: #ffffff;
+    --fc-surface-soft: #f8f5ef;
+    --fc-text: #292d27;
+    --fc-muted: #77766f;
+    --fc-accent: #68745c;
+    --fc-border-color: #e9e1d5;
+    --fc-input-bg: #ffffff;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --fc-page-bg: #171a17;
+    --fc-surface: #202520;
+    --fc-surface-soft: #252c25;
+    --fc-text: #eeeee6;
+    --fc-muted: #aaa99f;
+    --fc-accent: #a0ae8e;
+    --fc-border-color: #394138;
+    --fc-input-bg: #252c25;
+}
+
+html,
+body,
+#root {
+    background: var(--fc-page-bg);
+    color: var(--fc-text);
+}
+
+body {
+    transition: background-color .25s ease, color .25s ease;
+}
+
+/* Dashboard */
+:root[data-theme="dark"] .fc-dashboard {
+    --fc-white: #202520;
+    --fc-warm: #171a17;
+    --fc-ivory: #252c25;
+    --fc-beige: #394138;
+    --fc-sand: #586352;
+    --fc-charcoal: #eeeee6;
+    --fc-grey: #aaa99f;
+    --fc-olive: #a0ae8e;
+}
+
+:root[data-theme="dark"] .fc-topbar {
+    background: rgba(32, 37, 32, .94);
+}
+
+:root[data-theme="dark"] .fc-account-card,
+:root[data-theme="dark"] .fc-action-card:hover {
+    background: var(--fc-surface);
+}
+
+/* My campaigns */
+:root[data-theme="dark"] .my-campaigns-page {
+    background: var(--fc-page-bg);
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .my-campaigns-stats,
+:root[data-theme="dark"] .my-campaign-card,
+:root[data-theme="dark"] .my-campaigns-message,
+:root[data-theme="dark"] .my-campaigns-empty,
+:root[data-theme="dark"] .my-campaign-edit-modal,
+:root[data-theme="dark"] .my-campaign-edit-milestone {
+    background: var(--fc-surface);
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .my-campaign-edit-form input,
+:root[data-theme="dark"] .my-campaign-edit-form textarea,
+:root[data-theme="dark"] .my-campaign-edit-form select,
+:root[data-theme="dark"] .my-campaign-actions button {
+    background: var(--fc-input-bg);
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .my-campaign-edit-heading h2,
+:root[data-theme="dark"] .my-campaigns-empty h3,
+:root[data-theme="dark"] .my-campaigns-error h3 {
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .my-campaign-status {
+    background: #252c25;
+    color: #e5eadf;
+}
+
+/* Create campaign */
+:root[data-theme="dark"] .campaign-page {
+    background: var(--fc-page-bg);
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .campaign-header,
+:root[data-theme="dark"] .campaign-form-card,
+:root[data-theme="dark"] .campaign-milestone {
+    background: var(--fc-surface);
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .campaign-field input,
+:root[data-theme="dark"] .campaign-field textarea,
+:root[data-theme="dark"] .campaign-field select {
+    background: var(--fc-input-bg);
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .campaign-upload,
+:root[data-theme="dark"] .campaign-review,
+:root[data-theme="dark"] .campaign-icon,
+:root[data-theme="dark"] .campaign-wallet-address {
+    background: var(--fc-surface-soft);
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .campaign-upload strong,
+:root[data-theme="dark"] .campaign-brand {
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .campaign-secondary-button,
+:root[data-theme="dark"] .campaign-add-button {
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+    background: transparent;
+}
+
+/* Explore projects */
+:root[data-theme="dark"] .explore-page {
+    background: var(--fc-page-bg);
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .explore-card {
+    background: var(--fc-surface);
+    color: var(--fc-text);
+    border-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .explore-card-image {
+    background: var(--fc-surface-soft);
+}
+
+:root[data-theme="dark"] .explore-card-image > span {
+    background: var(--fc-surface);
+    color: var(--fc-accent);
+}
+
+:root[data-theme="dark"] .explore-empty h2 {
+    color: var(--fc-text);
+}
+
+/* General links and form controls */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] select {
+    color-scheme: dark;
+}
+
+:root[data-theme="dark"] .fc-dashboard,
+:root[data-theme="dark"] .campaign-page,
+:root[data-theme="dark"] .my-campaigns-page,
+:root[data-theme="dark"] .explore-page {
+    transition: background-color .25s ease, color .25s ease;
+}
+
+/* Theme toggle */
+.fc-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid var(--fc-border-color);
+    border-radius: 3px;
+    background: var(--fc-surface);
+    color: var(--fc-text);
+    font: 500 12px "DM Sans", sans-serif;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.fc-theme-toggle:hover {
+    background: var(--fc-surface-soft);
+}
+
+:root[data-theme="dark"] .site-header {
+    background: var(--fc-page-bg);
+    color: var(--fc-text);
+    border-bottom-color: var(--fc-border-color);
+}
+
+:root[data-theme="dark"] .site-header .nav-link,
+:root[data-theme="dark"] .site-header .nav-login {
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .dropdown-panel {
+    background: var(--fc-surface);
+    border-color: var(--fc-border-color);
+    color: var(--fc-text);
+}
+
+:root[data-theme="dark"] .dropdown-panel a {
+    color: var(--fc-text);
+}
+
+@media (max-width: 768px) {
+    .fc-theme-toggle {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+/* =========================================
+   FUNDCHAIN FOOTER — DARK MODE
+========================================= */
+
+:root[data-theme="dark"] .site-footer {
+    background: #202520 !important;
+    color: #eeeee6 !important;
+    border-top: 1px solid #394138;
+}
+
+:root[data-theme="dark"] .site-footer .footer-main {
+    background: #202520 !important;
+}
+
+:root[data-theme="dark"] .site-footer .footer-brand p {
+    color: #aaa99f !important;
+}
+
+:root[data-theme="dark"] .site-footer .footer-column h3 {
+    color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .site-footer .footer-column a,
+:root[data-theme="dark"] .site-footer .footer-email {
+    color: #d1d3c9 !important;
+}
+
+:root[data-theme="dark"] .site-footer a:hover {
+    color: #a0ae8e !important;
+}
+
+:root[data-theme="dark"] .site-footer .footer-bottom {
+    background: #202520 !important;
+    border-top: 1px solid #394138 !important;
+    color: #aaa99f !important;
+}
+
+:root[data-theme="dark"] .site-footer .footer-note {
+    color: #aaa99f !important;
+}
+
+/* Improve primary button contrast in dark mode */
+:root[data-theme="dark"] .button-dark,
+:root[data-theme="dark"] .my-campaigns-create,
+:root[data-theme="dark"] .campaign-primary-button {
+    background: #a0ae8e !important;
+    border-color: #a0ae8e !important;
+    color: #171a17 !important;
+}
+
+:root[data-theme="dark"] .button-dark:hover,
+:root[data-theme="dark"] .my-campaigns-create:hover,
+:root[data-theme="dark"] .campaign-primary-button:hover:not(:disabled) {
+    background: #b5c1a5 !important;
+    border-color: #b5c1a5 !important;
+    color: #171a17 !important;
+}
