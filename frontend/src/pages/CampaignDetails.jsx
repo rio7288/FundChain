@@ -20,8 +20,7 @@ import {
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/campaign-details.css";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
+import { API_URL } from "../api";
 const EVIDENCE_BUCKET = "milestone-evidence";
 const MAX_EVIDENCE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_EVIDENCE_TYPES = [

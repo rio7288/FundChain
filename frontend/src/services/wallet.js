@@ -1,15 +1,19 @@
+
 import { BrowserProvider } from "ethers";
 import { supabase } from "./supabase";
-
-const API_URL =
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
+import { API_URL } from "../api";
 
 const SEPOLIA_CHAIN_ID = 11155111;
 
 async function authenticatedRequest(endpoint, body) {
     const {
-        data: { session }
+        data: { session },
+        error: sessionError
     } = await supabase.auth.getSession();
+
+    if (sessionError) {
+        throw new Error(sessionError.message);
+    }
 
     if (!session) {
         throw new Error("Please log in first.");
@@ -27,7 +31,9 @@ async function authenticatedRequest(endpoint, body) {
     const result = await response.json();
 
     if (!response.ok) {
-        throw new Error(result.message || "Wallet request failed");
+        throw new Error(
+            result.message || "Wallet request failed"
+        );
     }
 
     return result;
@@ -59,8 +65,12 @@ export async function connectAndVerifyWallet() {
                         symbol: "ETH",
                         decimals: 18
                     },
-                    rpcUrls: ["https://ethereum-sepolia-rpc.publicnode.com"],
-                    blockExplorerUrls: ["https://sepolia.etherscan.io"]
+                    rpcUrls: [
+                        "https://ethereum-sepolia-rpc.publicnode.com"
+                    ],
+                    blockExplorerUrls: [
+                        "https://sepolia.etherscan.io"
+                    ]
                 }]);
             } else {
                 throw error;
@@ -77,7 +87,7 @@ export async function connectAndVerifyWallet() {
     const signer = await provider.getSigner();
     const address = await signer.getAddress();
 
-    // Ask backend for a signed verification challenge
+    // Request a signed verification challenge.
     const challenge = await authenticatedRequest(
         "/wallet/nonce",
         {
@@ -86,10 +96,12 @@ export async function connectAndVerifyWallet() {
         }
     );
 
-    // User signs the challenge using MetaMask
-    const signature = await signer.signMessage(challenge.message);
+    // Sign the challenge with MetaMask.
+    const signature = await signer.signMessage(
+        challenge.message
+    );
 
-    // Backend verifies the signature and links the wallet
+    // Verify signature and link wallet.
     const result = await authenticatedRequest(
         "/wallet/verify",
         {
