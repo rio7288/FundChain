@@ -1,39 +1,45 @@
 
 import { supabase } from "../config/supabase.js";
-import "dotenv/config";
+
 export async function authenticateUser(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
 
-        if (!authHeader?.startsWith("Bearer ")) {
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({
                 success: false,
-                message: "Authentication required"
+                message: "Authentication required.",
             });
         }
 
-        const token = authHeader.split(" ")[1];
+        const token = authHeader.slice(7).trim();
+
+        if (!token || token.split(/\s+/).length !== 1) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid authentication token.",
+            });
+        }
 
         const { data, error } = await supabase.auth.getUser(token);
 
-        if (error || !data.user) {
+        if (error || !data?.user?.id) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid or expired session"
+                message: "Invalid or expired session.",
             });
         }
 
         req.user = data.user;
         req.accessToken = token;
 
-        next();
-
+        return next();
     } catch (error) {
-        console.error("Authentication error:", error);
+        console.error("Authentication service error:", error);
 
-        return res.status(500).json({
+        return res.status(503).json({
             success: false,
-            message: "Authentication failed"
+            message: "Authentication service is temporarily unavailable.",
         });
     }
 }

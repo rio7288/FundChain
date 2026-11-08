@@ -436,7 +436,56 @@ describe("FundChainV2 - Milestone Crowdfunding", function () {
         )).to.equal(ETH("1"));
 
         const milestone = await fundChain.getMilestone(1, 0);
+        expect(milestone.status).to.equal(4n);
+    });
 
+    // SECURITY TEST: A milestone must not be paid twice.
+    it("SECURITY: Should prevent releasing the same milestone funds twice", async function () {
+        const {
+            fundChain,
+            creator,
+            donor1,
+            donor2
+        } = await deployFundChain();
+
+        await createCampaign(fundChain);
+        await fundCampaign(fundChain, donor1, donor2);
+        await submitEvidence(fundChain, creator, 0);
+
+        await fundChain.connect(donor1).voteOnMilestone(1, 0, true);
+        await finishVoting(fundChain, 0);
+        await fundChain.finalizeMilestone(1, 0);
+
+        const contractAddress = await fundChain.getAddress();
+        const balanceBefore = await ethers.provider.getBalance(contractAddress);
+
+        // First release must succeed.
+        await fundChain.connect(creator).releaseMilestoneFunds(1, 0);
+
+        const balanceAfterFirstRelease =
+            await ethers.provider.getBalance(contractAddress);
+
+        expect(balanceBefore - balanceAfterFirstRelease).to.equal(ETH("1"));
+
+        // A second release must fail. Use try/catch rather than the deprecated
+        // Chai .reverted matcher in this Hardhat 3 test setup.
+        let secondReleaseFailed = false;
+        try {
+            const tx = await fundChain.connect(creator).releaseMilestoneFunds(1, 0);
+            await tx.wait();
+        } catch (error) {
+            secondReleaseFailed = true;
+        }
+
+        expect(secondReleaseFailed).to.equal(true);
+
+        // A failed second attempt must not move any additional funds.
+        const balanceAfterSecondAttempt =
+            await ethers.provider.getBalance(contractAddress);
+
+        expect(balanceAfterSecondAttempt).to.equal(balanceAfterFirstRelease);
+
+        const milestone = await fundChain.getMilestone(1, 0);
         expect(milestone.status).to.equal(4n);
     });
 
@@ -881,24 +930,55 @@ describe("FundChainV2 - Milestone Crowdfunding", function () {
     });
 
     // TEST 32: Anyone may trigger release, but funds always go to the creator.
-    it("Should send milestone funds to the creator even when an outsider triggers release", async function () {
-        const { fundChain, creator, donor1, donor2, outsider } = await deployFundChain();
+    
+// TEST 32: Anyone may trigger release, but funds always go to the creator.
+    it("Should send milestone funds to the creator even when an outsider triggers release", 
+    async function () {
+        const {
+            fundChain,
+            creator,
+            donor1,
+            donor2,
+            outsider
+        } = await deployFundChain();
 
         await createCampaign(fundChain);
         await fundCampaign(fundChain, donor1, donor2);
         await submitEvidence(fundChain, creator, 0);
+
         await fundChain.connect(donor1).voteOnMilestone(1, 0, true);
+
         await finishVoting(fundChain, 0);
         await fundChain.finalizeMilestone(1, 0);
 
-        const creatorBalanceBefore = await ethers.provider.getBalance(creator.address);
+        const creatorBalanceBefore =
+            await ethers.provider.getBalance(creator.address);
 
-        await fundChain.connect(outsider).releaseMilestoneFunds(1, 0);
+        // Outsider triggers the release.
+        await expect(
+            fundChain.connect(outsider).releaseMilestoneFunds(1, 0)
+        )
+            .to.emit(fundChain, "MilestoneFundsReleased")
+            .withArgs(1, 0, creator.address, ETH("1"));
 
-        const creatorBalanceAfter = await ethers.provider.getBalance(creator.address);
-        expect(creatorBalanceAfter - creatorBalanceBefore).to.equal(ETH("1"));
-        expect(await ethers.provider.getBalance(await fundChain.getAddress())).to.equal(ETH("1"));
+        const creatorBalanceAfter =
+            await ethers.provider.getBalance(creator.address);
+
+        // Creator must receive exactly 1 ETH.
+        expect(creatorBalanceAfter - creatorBalanceBefore)
+            .to.equal(ETH("1"));
+
+        // The remaining milestone funds must stay in the contract.
+        expect(
+            await ethers.provider.getBalance(await fundChain.getAddress())
+        ).to.equal(ETH("1"));
+
+        // Milestone must be marked Paid.
+        const milestone = await fundChain.getMilestone(1, 0);
+
+        expect(milestone.status).to.equal(4n);
     });
+
 
     // TEST 33: A malicious creator contract cannot re-enter milestone release.
     it("Should block a reentrant milestone release from a malicious creator contract", async function () {

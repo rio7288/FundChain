@@ -1,6 +1,6 @@
 import "../styles/campaign.css";
 import { publishCampaignOnChain } from "../services/blockchain";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { parseEther, formatEther } from "ethers";
 import {
@@ -65,111 +65,8 @@ export default function CreateCampaign() {
     // Keep the saved draft and successful transaction in memory for safe retries.
     const [savedDraft, setSavedDraft] = useState(null);
     const [pendingPublication, setPendingPublication] = useState(null);
-    const [draftRecovered, setDraftRecovered] = useState(false);
-    const [recoveryTransactionHash, setRecoveryTransactionHash] = useState(
-        "0xb86465ac745635f80d785ca799ecd29570898b7141f7c82e558b9f8df987cd6e"
-    );
-    const [recoveringDraft, setRecoveringDraft] = useState(true);
 
-    // Recover the already-saved campaign instead of inserting another row.
-    useEffect(() => {
-        let cancelled = false;
 
-        async function recoverExistingDraft() {
-            try {
-                const existingDraftId = "a0f1bc18-7413-40c3-9912-62c68090b5e3";
-
-                const {
-                    data: { user },
-                    error: authError
-                } = await supabase.auth.getUser();
-
-                if (authError) throw authError;
-                if (!user) return;
-
-                const { data: draft, error: draftError } = await supabase
-                    .from("campaigns")
-                    .select("*")
-                    .eq("id", existingDraftId)
-                    .eq("creator_id", user.id)
-                    .eq("status", "draft")
-                    .maybeSingle();
-
-                if (draftError) throw draftError;
-                if (!draft || cancelled) return;
-
-                const { data: savedMilestones, error: milestonesError } =
-                    await supabase
-                        .from("milestones")
-                        .select("*")
-                        .eq("campaign_id", draft.id)
-                        .order("sequence_number", { ascending: true });
-
-                if (milestonesError) throw milestonesError;
-
-                if (!savedMilestones?.length) {
-                    throw new Error("The saved campaign has no milestones.");
-                }
-
-                const { data: walletLinks, error: walletError } = await supabase
-                    .from("wallet_links")
-                    .select("wallet_address")
-                    .eq("user_id", user.id)
-                    .eq("chain_id", 11155111)
-                    .limit(1);
-
-                if (walletError) throw walletError;
-                if (cancelled) return;
-
-                const deadlineDate = new Date(draft.deadline);
-                if (Number.isNaN(deadlineDate.getTime())) {
-                    throw new Error("The saved campaign deadline is invalid.");
-                }
-
-                const localDeadline = new Date(
-                    deadlineDate.getTime() -
-                    deadlineDate.getTimezoneOffset() * 60000
-                ).toISOString().slice(0, 16);
-
-                setForm({
-                    title: draft.title || "",
-                    description: draft.description || "",
-                    category: draft.category || "Other",
-                    targetEth: formatEther(BigInt(draft.target_amount_wei)),
-                    deadline: localDeadline
-                });
-
-                setMilestones(savedMilestones.map((milestone) => ({
-                    title: milestone.title || "",
-                    description: milestone.description || "",
-                    amountEth: formatEther(BigInt(milestone.amount_wei))
-                })));
-
-                setImagePreview(draft.image_url || "");
-                setWallet(walletLinks?.[0]?.wallet_address || "");
-                setSavedDraft(draft);
-                setDraftRecovered(true);
-                setStep(3);
-                setMessage("Your existing saved campaign draft has been recovered. No new draft was created.");
-            } catch (recoveryError) {
-                console.error("Campaign draft recovery error:", recoveryError);
-                if (!cancelled) {
-                    setError(
-                        "Could not recover your saved campaign: " +
-                        (recoveryError.message || "Unknown error")
-                    );
-                }
-            } finally {
-                if (!cancelled) setRecoveringDraft(false);
-            }
-        }
-
-        recoverExistingDraft();
-
-        return () => {
-            cancelled = true;
-        };
-    }, []);
 
     const updateForm = (e) => {
         setForm({
@@ -253,7 +150,7 @@ export default function CreateCampaign() {
         }
     };
 
-    const validateCampaign = ({ allowPastDeadline = false } = {}) => {
+    const validateCampaign = () => {
         if (form.title.trim().length < 5) {
             throw new Error("Campaign title must contain at least 5 characters.");
         }
@@ -266,7 +163,7 @@ export default function CreateCampaign() {
             throw new Error("Please enter a funding target and deadline.");
         }
 
-        if (!allowPastDeadline && new Date(form.deadline).getTime() <= Date.now()) {
+        if (new Date(form.deadline).getTime() <= Date.now()) {
             throw new Error("Your campaign deadline must be in the future.");
         }
 
@@ -329,7 +226,7 @@ export default function CreateCampaign() {
         let uploadedImagePath = null;
 
         try {
-            validateCampaign({ allowPastDeadline: draftRecovered });
+            validateCampaign();
 
             const {
                 data: { session },
@@ -344,9 +241,6 @@ export default function CreateCampaign() {
                 throw new Error("Please connect and verify your Sepolia wallet first.");
             }
 
-            if (draftRecovered && !/^0x[a-fA-F0-9]{64}$/.test(recoveryTransactionHash.trim())) {
-                throw new Error("Enter a valid existing Sepolia transaction hash.");
-            }
 
             // Save the Supabase draft once. Reuse it on retries.
             if (!draft) {
@@ -410,31 +304,21 @@ export default function CreateCampaign() {
                 );
             }
 
-            // Recovered drafts use the already-existing transaction hash.
-            // They must NEVER call publishCampaignOnChain().
-            let publication;
+            // Publish using FundChain V2.
+            // Reuse a successful transaction if backend verification needs retrying.
+            let publication = pendingPublication;
 
-            if (draftRecovered) {
-                publication = {
-                    transactionHash: recoveryTransactionHash.trim(),
-                    creatorWallet: wallet
-                };
-            } else {
-                publication = pendingPublication;
+            if (!publication) {
+                publication = await publishCampaignOnChain({
+                    campaign: {
+                        ...draft,
+                        targetEth: form.targetEth
+                    },
+                    milestones,
+                    expectedWallet: wallet
+                });
 
-                if (!publication) {
-                    publication = await publishCampaignOnChain({
-                        campaign: {
-                            ...draft,
-                            targetEth: form.targetEth
-                        },
-                        milestones,
-                        expectedWallet: wallet
-                    });
-
-                    // Preserve a successful transaction if backend verification fails.
-                    setPendingPublication(publication);
-                }
+                setPendingPublication(publication);
             }
 
             // Backend independently verifies the existing transaction before activation.
@@ -867,31 +751,7 @@ export default function CreateCampaign() {
                                 </div>
                             </div>
 
-                            {draftRecovered && (
-                                <div className="campaign-network-note" style={{ display: "block", marginTop: "18px" }}>
-                                    <strong>Recover your existing Sepolia transaction</strong>
-                                    <p>
-                                        This uses your previous transaction. It will not ask MetaMask
-                                        to create another campaign transaction. The backend will verify
-                                        the receipt and match it against this saved draft.
-                                    </p>
-                                    <div className="campaign-field" style={{ marginTop: "12px" }}>
-                                        <label htmlFor="recoveryTransactionHash">Existing transaction hash</label>
-                                        <input
-                                            id="recoveryTransactionHash"
-                                            type="text"
-                                            value={recoveryTransactionHash}
-                                            onChange={(e) => setRecoveryTransactionHash(e.target.value.trim())}
-                                            spellCheck={false}
-                                            autoComplete="off"
-                                        />
-                                    </div>
-                                </div>
-                            )}
 
-                            {recoveringDraft && (
-                                <p role="status">Checking for your previously saved campaign…</p>
-                            )}
 
                             <div className="campaign-form-actions">
                                 <button
@@ -907,19 +767,13 @@ export default function CreateCampaign() {
                                     type="button"
                                     className="campaign-primary-button"
                                     onClick={handlePublish}
-                                    disabled={
-                                        loading ||
-                                        recoveringDraft ||
-                                        (draftRecovered && !/^0x[a-fA-F0-9]{64}$/.test(recoveryTransactionHash.trim()))
-                                    }
+                                    disabled={loading}
                                 >
                                     {loading
                                         ? "Publishing campaign..."
-                                        : draftRecovered
-                                            ? "Verify existing transaction & publish"
-                                            : savedDraft
-                                                ? "Retry publishing"
-                                                : "Publish campaign"}
+                                        : savedDraft
+                                            ? "Retry publishing"
+                                            : "Publish campaign"}
                                     {!loading && <Check size={17} />}
                                 </button>
                             </div>

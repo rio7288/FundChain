@@ -8,6 +8,8 @@ import {
     verifyCampaignCreation
 } from "../services/chain-verification.service.js";
 
+const SEPOLIA_CHAIN_ID = 11155111;
+
 function getUserClient(accessToken) {
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
         throw new Error("Missing Supabase user environment variables.");
@@ -54,6 +56,25 @@ const supabaseAdmin = createClient(
     }
 );
 
+function getV2ContractAddress() {
+    const configuredAddress =
+        process.env.FUNDCHAIN_V2_CONTRACT_ADDRESS;
+
+    if (!configuredAddress) {
+        throw new Error(
+            "FUNDCHAIN_V2_CONTRACT_ADDRESS is missing."
+        );
+    }
+
+    try {
+        return getAddress(configuredAddress.trim().toLowerCase());
+    } catch {
+        throw new Error(
+            "FUNDCHAIN_V2_CONTRACT_ADDRESS is invalid."
+        );
+    }
+}
+
 export async function publishCampaignController(req, res) {
     try {
         const campaignId = req.params.id;
@@ -63,7 +84,7 @@ export async function publishCampaignController(req, res) {
             creatorWallet,
         } = req.body || {};
 
-        // 1. Validate transaction hash and wallet
+        // 1. Validate transaction hash and wallet.
         if (
             !/^0x[a-fA-F0-9]{64}$/.test(transactionHash || "") ||
             !creatorWallet
@@ -88,10 +109,17 @@ export async function publishCampaignController(req, res) {
             });
         }
 
-        // 2. Authenticate user
+        // 2. Authenticate user.
+        if (!req.user?.id) {
+            return res.status(401).json({
+                success: false,
+                message: "Authentication required.",
+            });
+        }
+
         const userClient = getUserClient(req.accessToken);
 
-        // 3. Fetch the user's saved campaign
+        // 3. Fetch the user's saved campaign.
         const {
             data: campaign,
             error: campaignError,
@@ -119,7 +147,8 @@ export async function publishCampaignController(req, res) {
             });
         }
 
-        // 4. Handle repeated requests safely
+        // 4. Handle repeated requests safely.
+        // This preserves existing V1 and V2 campaigns.
         if (campaign.status === "active") {
             if (
                 campaign.transaction_hash?.toLowerCase() ===
@@ -145,7 +174,7 @@ export async function publishCampaignController(req, res) {
             });
         }
 
-        // 5. Verify the linked wallet
+        // 5. Verify the linked Sepolia wallet.
         const {
             data: walletLink,
             error: walletError,
@@ -154,7 +183,7 @@ export async function publishCampaignController(req, res) {
             .select("wallet_address,chain_id")
             .eq("user_id", req.user.id)
             .eq("wallet_address", wallet)
-            .eq("chain_id", 11155111)
+            .eq("chain_id", SEPOLIA_CHAIN_ID)
             .maybeSingle();
 
         if (walletError) throw walletError;
@@ -167,7 +196,7 @@ export async function publishCampaignController(req, res) {
             });
         }
 
-        // 6. Fetch saved milestones
+        // 6. Fetch saved milestones.
         const {
             data: milestones,
             error: milestoneError,
@@ -185,7 +214,7 @@ export async function publishCampaignController(req, res) {
             throw new Error("Campaign has no saved milestones.");
         }
 
-        // 7. Convert saved deadline to Unix seconds
+        // 7. Convert saved deadline to Unix seconds.
         const deadlineMilliseconds = new Date(
             campaign.deadline
         ).getTime();
@@ -198,8 +227,7 @@ export async function publishCampaignController(req, res) {
             Math.floor(deadlineMilliseconds / 1000)
         );
 
-        // 8. Verify the existing blockchain transaction.
-        // Campaign ID is extracted from the CampaignCreated event.
+        // 8. Verify the blockchain transaction.
         const verified = await verifyCampaignCreation({
             transactionHash,
             expectedCreator: wallet,
@@ -208,8 +236,21 @@ export async function publishCampaignController(req, res) {
             expectedMilestoneCount: milestones.length,
         });
 
-        // 9. Activate the draft using the server-side admin client.
-        // Ownership and draft status are explicitly checked.
+        // 9. Enforce V2 for all newly published campaigns.
+        const v2ContractAddress = getV2ContractAddress();
+
+        if (
+            getAddress(verified.contractAddress) !==
+            v2ContractAddress
+        ) {
+            return res.status(403).json({
+                success: false,
+                message:
+                    "New FundChain campaigns must be created using the approved V2 smart contract.",
+            });
+        }
+
+        // 10. Activate the draft using the server-side admin client.
         const {
             data: updated,
             error: updateError,
@@ -263,7 +304,7 @@ export async function publishCampaignController(req, res) {
 
         return res.status(200).json({
             success: true,
-            message: "Campaign verified on Sepolia and published.",
+            message: "Campaign verified on Sepolia and published using FundChain V2.",
             campaign: updated,
             chain: verified,
         });
@@ -271,7 +312,11 @@ export async function publishCampaignController(req, res) {
     } catch (error) {
         console.error("Campaign publish error:", error);
 
-        return res.status(400).json({
+        const statusCode =
+            error.statusCode ||
+            (error.message?.includes("V2") ? 403 : 400);
+
+        return res.status(statusCode).json({
             success: false,
             message:
                 error.message ||

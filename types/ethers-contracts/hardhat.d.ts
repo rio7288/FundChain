@@ -10,23 +10,23 @@ import * as Contracts from "./index.js";
 
 declare module "@nomicfoundation/hardhat-ethers/types" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
-  getContractFactory(name: 'FundChain', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.FundChain__factory>
-getContractFactory(name: 'FundChainV2', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.FundChainV2__factory>
+  getContractFactory(name: 'FundChainV2', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.FundChainV2__factory>
+getContractFactory(name: 'FundChain', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.FundChain__factory>
 getContractFactory(name: 'IFundChainReentryTarget', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.IFundChainReentryTarget__factory>
 getContractFactory(name: 'ReentrantCreator', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.ReentrantCreator__factory>
 
-  getContractAt(name: 'FundChain', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.FundChain>
-getContractAt(name: 'FundChainV2', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.FundChainV2>
+  getContractAt(name: 'FundChainV2', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.FundChainV2>
+getContractAt(name: 'FundChain', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.FundChain>
 getContractAt(name: 'IFundChainReentryTarget', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.IFundChainReentryTarget>
 getContractAt(name: 'ReentrantCreator', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.ReentrantCreator>
 
-  deployContract(name: 'FundChain', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChain>
-deployContract(name: 'FundChainV2', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChainV2>
+  deployContract(name: 'FundChainV2', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChainV2>
+deployContract(name: 'FundChain', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChain>
 deployContract(name: 'IFundChainReentryTarget', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IFundChainReentryTarget>
 deployContract(name: 'ReentrantCreator', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ReentrantCreator>
 
-  deployContract(name: 'FundChain', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChain>
-deployContract(name: 'FundChainV2', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChainV2>
+  deployContract(name: 'FundChainV2', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChainV2>
+deployContract(name: 'FundChain', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.FundChain>
 deployContract(name: 'IFundChainReentryTarget', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.IFundChainReentryTarget>
 deployContract(name: 'ReentrantCreator', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.ReentrantCreator>
 

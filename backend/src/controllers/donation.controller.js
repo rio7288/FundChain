@@ -15,13 +15,20 @@ const DONATION_EVENT = new Interface([
     "event DonationReceived(uint256 indexed campaignId,address indexed donor,uint256 amount)",
 ]);
 
+class HttpError extends Error {
+    constructor(statusCode, message) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+}
+
 function getUserClient(accessToken) {
     if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
         throw new Error("Missing Supabase user environment variables.");
     }
 
     if (!accessToken) {
-        throw new Error("Authentication token is missing.");
+        throw new HttpError(401, "Authentication token is missing.");
     }
 
     return createClient(
@@ -45,9 +52,7 @@ if (
     !process.env.SUPABASE_URL ||
     !process.env.SUPABASE_SERVICE_ROLE_KEY
 ) {
-    throw new Error(
-        "Missing Supabase admin environment variables."
-    );
+    throw new Error("Missing Supabase admin environment variables.");
 }
 
 const supabaseAdmin = createClient(
@@ -69,24 +74,47 @@ function getProvider() {
     }
 
     if (!provider) {
-        provider = new JsonRpcProvider(
-            process.env.SEPOLIA_RPC_URL
-        );
+        provider = new JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
     }
 
     return provider;
 }
 
-function normalizeAddress(address) {
+function normalizeAddress(address, label = "wallet") {
     try {
         return getAddress(String(address).trim().toLowerCase());
     } catch {
-        throw new Error("Invalid wallet address.");
+        throw new HttpError(400, `Invalid ${label} address.`);
     }
+}
+
+function getAllowedContractAddresses() {
+    const configuredAddresses = [
+        process.env.FUNDCHAIN_V1_CONTRACT_ADDRESS ||
+            process.env.FUNDCHAIN_CONTRACT_ADDRESS,
+        process.env.FUNDCHAIN_V2_CONTRACT_ADDRESS,
+    ];
+
+    const addresses = configuredAddresses
+        .filter(Boolean)
+        .map((address, index) =>
+            normalizeAddress(address, `FundChain contract ${index + 1}`)
+        );
+
+    const uniqueAddresses = [...new Set(addresses)];
+
+    if (uniqueAddresses.length === 0) {
+        throw new Error(
+            "Configure at least one FundChain V1 or V2 contract address."
+        );
+    }
+
+    return uniqueAddresses;
 }
 
 export async function createDonationController(req, res) {
     try {
+        // 1. Validate request and normalize transaction hash.
         const campaignId = req.params.id;
 
         const {
@@ -94,32 +122,31 @@ export async function createDonationController(req, res) {
             walletAddress,
         } = req.body || {};
 
-        // 1. Validate request
-        if (!/^[0-9a-fA-F-]{36}$/.test(campaignId || "")) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid campaign ID.",
-            });
+        if (
+            !/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+                campaignId || ""
+            )
+        ) {
+            throw new HttpError(400, "Invalid campaign ID.");
         }
 
         if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash || "")) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid transaction hash.",
-            });
+            throw new HttpError(400, "Invalid transaction hash.");
         }
 
         if (!walletAddress) {
-            return res.status(400).json({
-                success: false,
-                message: "Donor wallet address is required.",
-            });
+            throw new HttpError(400, "Donor wallet address is required.");
         }
 
+        if (!req.user?.id) {
+            throw new HttpError(401, "Authentication required.");
+        }
+
+        const normalizedHash = transactionHash.toLowerCase();
         const wallet = normalizeAddress(walletAddress);
         const userClient = getUserClient(req.accessToken);
 
-        // 2. Fetch the campaign
+        // 2. Fetch the campaign.
         const {
             data: campaign,
             error: campaignError,
@@ -139,24 +166,44 @@ export async function createDonationController(req, res) {
         if (campaignError) throw campaignError;
 
         if (!campaign) {
-            return res.status(404).json({
-                success: false,
-                message: "Campaign not found.",
-            });
+            throw new HttpError(404, "Campaign not found.");
         }
 
         if (campaign.status !== "active") {
-            return res.status(409).json({
-                success: false,
-                message: "This campaign is not accepting donations.",
-            });
+            throw new HttpError(
+                409,
+                "This campaign is not accepting donations."
+            );
         }
 
         if (campaign.contract_campaign_id === null) {
-            throw new Error("Campaign has no verified blockchain ID.");
+            throw new Error(
+                "Campaign has no verified blockchain ID."
+            );
         }
 
-        // 3. Verify linked wallet
+        // 3. Verify the campaign's contract against the configured allowlist.
+        const allowedAddresses = getAllowedContractAddresses();
+
+        if (!campaign.contract_address) {
+            throw new Error(
+                "Campaign does not have a configured contract address."
+            );
+        }
+
+        const contractAddress = normalizeAddress(
+            campaign.contract_address,
+            "campaign contract"
+        );
+
+        if (!allowedAddresses.includes(contractAddress)) {
+            throw new HttpError(
+                403,
+                "Campaign uses an unapproved FundChain contract."
+            );
+        }
+
+        // 4. Verify that the donor wallet is linked to this account.
         const {
             data: walletLinks,
             error: walletError,
@@ -177,80 +224,83 @@ export async function createDonationController(req, res) {
         });
 
         if (!linkedWallet) {
-            return res.status(403).json({
-                success: false,
-                message: "This wallet is not linked to your FundChain account.",
-            });
+            throw new HttpError(
+                403,
+                "This wallet is not linked to your FundChain account."
+            );
         }
 
-        // 4. Check duplicate transaction
+        // 5. Check whether this transaction was already recorded.
         const {
             data: existingDonation,
             error: duplicateError,
         } = await supabaseAdmin
             .from("donations")
             .select("id,tx_hash")
-            .eq("tx_hash", transactionHash)
+            .eq("tx_hash", normalizedHash)
             .maybeSingle();
 
         if (duplicateError) throw duplicateError;
 
         if (existingDonation) {
-            return res.status(409).json({
-                success: false,
-                message: "This transaction has already been recorded.",
-                donation: existingDonation,
-            });
+            throw new HttpError(
+                409,
+                "This transaction has already been recorded."
+            );
         }
 
-        // 5. Verify Sepolia network
+        // 6. Verify Sepolia network.
         const rpc = getProvider();
         const network = await rpc.getNetwork();
 
         if (network.chainId !== SEPOLIA_CHAIN_ID) {
-            throw new Error("Backend RPC is not connected to Sepolia.");
+            throw new Error(
+                "Backend RPC is not connected to Sepolia."
+            );
         }
 
-        // 6. Verify transaction receipt
-        const receipt = await rpc.getTransactionReceipt(
-            transactionHash
-        );
+        // 7. Verify the transaction receipt.
+        const receipt = await rpc.getTransactionReceipt(normalizedHash);
 
         if (!receipt || receipt.status !== 1) {
-            throw new Error(
+            throw new HttpError(
+                400,
                 "Donation transaction is not confirmed successfully."
             );
         }
 
-        const tx = await rpc.getTransaction(transactionHash);
+        const tx = await rpc.getTransaction(normalizedHash);
 
         if (!tx || !tx.to) {
-            throw new Error("Donation transaction was not found.");
+            throw new HttpError(
+                400,
+                "Donation transaction was not found."
+            );
         }
 
-        const contractAddress = normalizeAddress(
-            campaign.contract_address ||
-            process.env.FUNDCHAIN_V1_CONTRACT_ADDRESS ||
-            process.env.FUNDCHAIN_CONTRACT_ADDRESS
-        );
-
-        if (normalizeAddress(tx.to) !== contractAddress) {
-            throw new Error(
+        // 8. Verify contract destination and transaction sender.
+        if (normalizeAddress(tx.to, "transaction target") !== contractAddress) {
+            throw new HttpError(
+                400,
                 "Transaction was not sent to the campaign's FundChain contract."
             );
         }
 
-        if (normalizeAddress(tx.from) !== wallet) {
-            throw new Error(
+        if (normalizeAddress(tx.from, "transaction sender") !== wallet) {
+            throw new HttpError(
+                400,
                 "Transaction sender does not match the linked donor wallet."
             );
         }
 
-        // 7. Extract and verify DonationReceived event
+        // 9. Find and verify the DonationReceived event.
         let donationEvent = null;
 
         for (const log of receipt.logs) {
-            if (normalizeAddress(log.address) !== contractAddress) {
+            if (
+                normalizeAddress(log.address, "event contract") !==
+                contractAddress
+            ) {
                 continue;
             }
 
@@ -260,19 +310,20 @@ export async function createDonationController(req, res) {
                 if (
                     parsed?.name === "DonationReceived" &&
                     parsed.args.campaignId.toString() ===
-                    String(campaign.contract_campaign_id) &&
-                    normalizeAddress(parsed.args.donor) === wallet
+                        String(campaign.contract_campaign_id) &&
+                    normalizeAddress(parsed.args.donor, "event donor") === wallet
                 ) {
                     donationEvent = parsed;
                     break;
                 }
             } catch {
-                // Ignore unrelated contract events.
+                // Ignore unrelated logs.
             }
         }
 
         if (!donationEvent) {
-            throw new Error(
+            throw new HttpError(
+                400,
                 "A matching DonationReceived event was not found."
             );
         }
@@ -280,33 +331,44 @@ export async function createDonationController(req, res) {
         const amountWei = donationEvent.args.amount.toString();
 
         if (BigInt(amountWei) <= 0n) {
-            throw new Error("Invalid donation amount.");
+            throw new HttpError(400, "Invalid donation amount.");
         }
 
-        // 8. Save independently verified donation
-        const { data: donation, error: insertError } =
-            await supabaseAdmin
-                .from("donations")
-                .insert({
-                    campaign_id: campaignId,
-                    donor_id: req.user.id,
-                    wallet_address: wallet,
-                    amount_wei: amountWei,
-                    tx_hash: transactionHash,
-                    block_number: receipt.blockNumber,
-                    is_anonymous: false,
-                })
-                .select()
-                .single();
+        // For this FundChain payable donation flow, msg.value must
+        // equal the amount recorded in DonationReceived.
+        if (tx.value.toString() !== amountWei) {
+            throw new HttpError(
+                400,
+                "Transaction value does not match the recorded donation amount."
+            );
+        }
+
+        // 10. Independently save the verified donation.
+        const {
+            data: donation,
+            error: insertError,
+        } = await supabaseAdmin
+            .from("donations")
+            .insert({
+                campaign_id: campaignId,
+                donor_id: req.user.id,
+                wallet_address: wallet,
+                amount_wei: amountWei,
+                tx_hash: normalizedHash,
+                block_number: receipt.blockNumber,
+                is_anonymous: false,
+            })
+            .select()
+            .single();
 
         if (insertError) {
             // Handle a duplicate transaction if the database
             // has a unique constraint on tx_hash.
             if (insertError.code === "23505") {
-                return res.status(409).json({
-                    success: false,
-                    message: "This donation transaction is already recorded.",
-                });
+                throw new HttpError(
+                    409,
+                    "This donation transaction is already recorded."
+                );
             }
 
             throw insertError;
@@ -321,10 +383,17 @@ export async function createDonationController(req, res) {
     } catch (error) {
         console.error("Donation verification error:", error);
 
-        return res.status(400).json({
+        const statusCode =
+            error instanceof HttpError
+                ? error.statusCode
+                : 500;
+
+        return res.status(statusCode).json({
             success: false,
             message:
-                error.message || "Unable to verify donation.",
+                error instanceof HttpError
+                    ? error.message
+                    : "Unable to verify donation due to a server error.",
         });
     }
 }
